@@ -51,11 +51,12 @@ const VehicleSchema = new mongoose.Schema({
   },
 });
 
-// Remove redundant fields from existing documents
-VehicleSchema.remove('contactPerson');
-VehicleSchema.remove('email');
-VehicleSchema.remove('phone');
-VehicleSchema.remove('address');
-VehicleSchema.remove('vatNumber');
+const Vehicle = mongoose.model('Vehicle', VehicleSchema);
 
-module.exports = mongoose.model('Vehicle', VehicleSchema);
+// Drop old indexes that might be causing duplicate errors from removed fields
+Vehicle.collection.dropIndex('email_1').catch(err => {});
+Vehicle.collection.dropIndex('phone_1').catch(err => {});
+Vehicle.collection.dropIndex('vatNumber_1').catch(err => {});
+Vehicle.collection.dropIndex('contactPerson_1').catch(err => {});
+
+module.exports = Vehicle;
