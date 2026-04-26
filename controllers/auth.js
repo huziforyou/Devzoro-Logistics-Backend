@@ -98,22 +98,39 @@ exports.logout = async (req, res, next) => {
 
 // Get token from model, create cookie and send response
 const sendTokenResponse = (user, statusCode, res) => {
-  // Create token
-  const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRE,
-  });
+  try {
+    // Create token
+    if (!process.env.JWT_SECRET) {
+      console.error('JWT_SECRET is not defined in environment variables');
+      return res.status(500).json({
+        success: false,
+        message: 'Server configuration error: JWT_SECRET is missing'
+      });
+    }
 
-  res.status(statusCode).json({
-    success: true,
-    token,
-    user: {
-      id: user._id,
-      name: user.name,
-      email: user.email,
-      role: user.role,
-      driverProfile: user.driverProfile,
-      vehicleProfile: user.vehicleProfile,
-      permissions: user.permissions,
-    },
-  });
+    const token = jwt.sign({ id: user._id.toString() }, process.env.JWT_SECRET, {
+      expiresIn: process.env.JWT_EXPIRE || '30d',
+    });
+
+    res.status(statusCode).json({
+      success: true,
+      token,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        driverProfile: user.driverProfile,
+        vehicleProfile: user.vehicleProfile,
+        permissions: user.permissions,
+      },
+    });
+  } catch (error) {
+    console.error('Error in sendTokenResponse:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error generating response token',
+      error: error.message
+    });
+  }
 };
