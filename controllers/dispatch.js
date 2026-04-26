@@ -213,7 +213,7 @@ exports.getDispatchOrders = async (req, res, next) => {
     let query;
 
     // Role & Permission based filtering
-    const isAdmin = ['super-admin', 'admin'].includes(req.user.role);
+    const isAdmin = ['super-admin', 'admin', 'manager'].includes(req.user.role);
     
     // Explicitly check permissions object and its properties
     const hasCreatePerm = req.user.permissions && req.user.permissions.createDispatch === true;

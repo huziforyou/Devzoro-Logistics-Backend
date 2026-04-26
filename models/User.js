@@ -21,7 +21,7 @@ const userSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ['super-admin', 'admin', 'viewer', 'vehicle', 'driver'],
+    enum: ['super-admin', 'admin', 'manager', 'viewer', 'vehicle', 'driver'],
     default: 'vehicle',
   },
   driverProfile: {

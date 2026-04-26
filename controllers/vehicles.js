@@ -165,8 +165,8 @@ exports.createVehicle = async (req, res, next) => {
 // @access  Private/Admin
 exports.updateVehicle = async (req, res, next) => {
   try {
-    // Prevent non-admins from changing the status
-    if (req.user.role !== 'admin' && req.user.role !== 'super-admin') {
+    // Prevent non-admins/managers from changing the status
+    if (req.user.role !== 'admin' && req.user.role !== 'super-admin' && req.user.role !== 'manager') {
       delete req.body.status;
     }
 

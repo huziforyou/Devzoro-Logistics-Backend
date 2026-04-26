@@ -6,7 +6,7 @@ const { protect, authorize } = require('../middleware/auth');
 router.use(protect);
 
 router.get('/dashboard', getDashboardStats);
-router.get('/vehicles', authorize('admin', 'super-admin'), getVehicleReports);
-router.get('/drivers', authorize('admin', 'super-admin'), getDriverReports);
+router.get('/vehicles', authorize('admin', 'super-admin', 'manager'), getVehicleReports);
+router.get('/drivers', authorize('admin', 'super-admin', 'manager'), getDriverReports);
 
 module.exports = router;

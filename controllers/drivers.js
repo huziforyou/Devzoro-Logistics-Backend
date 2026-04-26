@@ -134,7 +134,7 @@ exports.updateDriver = async (req, res, next) => {
     const { assignedVehicle, ...driverData } = req.body;
     
     // Prevent non-admins from changing the status
-    if (req.user.role !== 'admin' && req.user.role !== 'super-admin') {
+    if (req.user.role !== 'admin' && req.user.role !== 'super-admin' && req.user.role !== 'manager') {
       delete driverData.status;
     }
 

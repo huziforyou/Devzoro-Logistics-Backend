@@ -9,9 +9,9 @@ const router = express.Router();
 
 const { protect, authorize } = require('../middleware/auth');
 
-// All routes here are protected and require admin role
+// All routes here are protected and require admin or super-admin role
 router.use(protect);
-router.use(authorize('admin'));
+router.use(authorize('admin', 'super-admin'));
 
 router.get('/pending-approvals', getPendingApprovals);
 router.put('/approve-vehicle/:id', approveVehicle);

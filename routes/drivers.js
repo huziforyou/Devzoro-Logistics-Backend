@@ -16,7 +16,7 @@ router.route('/')
   .get(getDrivers)
   .post(hasPermission('manageDrivers'), createDriver);
 
-router.put('/approve/:id', authorize('admin'), approveDriver);
+router.put('/approve/:id', authorize('admin', 'super-admin'), approveDriver);
 
 router.route('/:id')
   .get(getDriver)

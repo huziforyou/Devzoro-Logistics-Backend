@@ -20,7 +20,7 @@ router.route('/')
   .get(getVehicles)
   .post(hasPermission('manageVehicles'), createVehicle);
 
-router.put('/approve/:id', authorize('admin'), approveVehicle);
+router.put('/approve/:id', authorize('admin', 'super-admin'), approveVehicle);
 
 router.route('/:id')
   .get(getVehicle)
