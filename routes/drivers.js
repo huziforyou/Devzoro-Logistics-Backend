@@ -8,19 +8,19 @@ const {
   deleteDriver,
   approveDriver
 } = require('../controllers/drivers');
-const { protect, authorize } = require('../middleware/auth');
+const { protect, authorize, hasPermission } = require('../middleware/auth');
 
 router.use(protect);
 
 router.route('/')
   .get(getDrivers)
-  .post(createDriver);
+  .post(hasPermission('manageDrivers'), createDriver);
 
 router.put('/approve/:id', authorize('admin'), approveDriver);
 
 router.route('/:id')
   .get(getDriver)
-  .put(updateDriver)
-  .delete(deleteDriver);
+  .put(hasPermission('manageDrivers'), updateDriver)
+  .delete(hasPermission('manageDrivers'), deleteDriver);
 
 module.exports = router;

@@ -38,7 +38,9 @@ const userSchema = new mongoose.Schema({
     createDispatch: { type: Boolean, default: false },
     editDispatch: { type: Boolean, default: false },
     viewReports: { type: Boolean, default: false },
-    manageUsers: { type: Boolean, default: false }
+    manageUsers: { type: Boolean, default: false },
+    manageVehicles: { type: Boolean, default: false },
+    manageDrivers: { type: Boolean, default: false }
   },
   active: { type: Boolean, default: true, select: false },
 }, {

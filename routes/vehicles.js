@@ -12,20 +12,20 @@ const {
   updateLocation,
   approveVehicle
 } = require('../controllers/vehicles');
-const { protect, authorize } = require('../middleware/auth');
+const { protect, authorize, hasPermission } = require('../middleware/auth');
 
 router.use(protect);
 
 router.route('/')
   .get(getVehicles)
-  .post(createVehicle);
+  .post(hasPermission('manageVehicles'), createVehicle);
 
 router.put('/approve/:id', authorize('admin'), approveVehicle);
 
 router.route('/:id')
   .get(getVehicle)
-  .put(updateVehicle)
-  .delete(deleteVehicle);
+  .put(hasPermission('manageVehicles'), updateVehicle)
+  .delete(hasPermission('manageVehicles'), deleteVehicle);
 
 router.put('/:id/assign', assignDriver);
 router.put('/:id/approve', approveAssignment);

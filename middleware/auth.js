@@ -41,3 +41,20 @@ exports.authorize = (...roles) => {
     next();
   };
 };
+
+exports.hasPermission = (permissionName) => {
+  return (req, res, next) => {
+    // Admins and Super-admins bypass permission checks
+    if (['super-admin', 'admin'].includes(req.user.role)) {
+      return next();
+    }
+
+    if (!req.user.permissions || !req.user.permissions[permissionName]) {
+      return res.status(403).json({
+        success: false,
+        message: `User does not have permission: ${permissionName}`,
+      });
+    }
+    next();
+  };
+};

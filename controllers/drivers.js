@@ -133,6 +133,11 @@ exports.updateDriver = async (req, res, next) => {
   try {
     const { assignedVehicle, ...driverData } = req.body;
     
+    // Prevent non-admins from changing the status
+    if (req.user.role !== 'admin' && req.user.role !== 'super-admin') {
+      delete driverData.status;
+    }
+
     const driver = await Driver.findById(req.params.id);
 
     if (!driver) {
