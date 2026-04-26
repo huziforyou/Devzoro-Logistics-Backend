@@ -15,8 +15,16 @@ exports.getDrivers = async (req, res, next) => {
       const taskCount = await DispatchOrder.countDocuments({ assignedDriver: d._id });
       // Check if this driver has any pending vehicle assignment
       const pendingVehicle = await Vehicle.findOne({ pendingDriver: d._id, assignmentStatus: 'pending' });
+      
+      // Filter out assignedVehicle if its status is not approved
+      const driverObj = d.toObject();
+      const vehicle = await Vehicle.findById(d.assignedVehicle);
+      if (vehicle && vehicle.assignmentStatus !== 'approved') {
+        driverObj.assignedVehicle = null;
+      }
+
       return { 
-        ...d.toObject(), 
+        ...driverObj, 
         taskCount, 
         hasPendingAssignment: !!pendingVehicle,
         pendingVehiclePlate: pendingVehicle ? pendingVehicle.plateNumber : null
@@ -47,10 +55,17 @@ exports.getDriver = async (req, res, next) => {
     // Check for pending vehicle assignment
     const pendingVehicle = await Vehicle.findOne({ pendingDriver: driver._id, assignmentStatus: 'pending' });
 
+    // Filter out assignedVehicle if its status is not approved
+    const driverObj = driver.toObject();
+    const vehicle = await Vehicle.findById(driver.assignedVehicle);
+    if (vehicle && vehicle.assignmentStatus !== 'approved') {
+      driverObj.assignedVehicle = null;
+    }
+
     res.status(200).json({ 
       success: true, 
       data: {
-        ...driver.toObject(),
+        ...driverObj,
         tasks,
         pendingVehicle: pendingVehicle ? { _id: pendingVehicle._id, plateNumber: pendingVehicle.plateNumber } : null
       } 

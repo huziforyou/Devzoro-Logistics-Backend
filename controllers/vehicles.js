@@ -15,7 +15,14 @@ exports.getVehicles = async (req, res, next) => {
     // Add record counts to each vehicle
     const vehiclesWithCounts = await Promise.all(vehicles.map(async (v) => {
       const recordCount = await DispatchOrder.countDocuments({ assignedVehicle: v._id });
-      return { ...v.toObject(), recordCount };
+      const vehicleObj = v.toObject();
+      
+      // If assignment is not approved, hide the assignedDriver from the object
+      if (v.assignmentStatus !== 'approved') {
+        vehicleObj.assignedDriver = null;
+      }
+      
+      return { ...vehicleObj, recordCount };
     }));
 
     res.status(200).json({ success: true, count: vehicles.length, data: vehiclesWithCounts });
@@ -42,10 +49,15 @@ exports.getVehicle = async (req, res, next) => {
       .populate('assignedDriver', 'fullName')
       .sort('-createdAt');
 
+    const vehicleObj = vehicle.toObject();
+    if (vehicle.assignmentStatus !== 'approved') {
+      vehicleObj.assignedDriver = null;
+    }
+
     res.status(200).json({ 
       success: true, 
       data: {
-        ...vehicle.toObject(),
+        ...vehicleObj,
         records
       } 
     });
