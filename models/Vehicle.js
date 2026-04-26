@@ -29,8 +29,8 @@ const VehicleSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['active', 'inactive'],
-    default: 'active',
+    enum: ['Pending', 'Approved', 'Rejected'],
+    default: 'Pending',
     required: false
   },
   lastLocation: {

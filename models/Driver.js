@@ -30,8 +30,8 @@ const DriverSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['active', 'inactive', 'pending'],
-    default: 'pending',
+    enum: ['Pending', 'Approved', 'Rejected'],
+    default: 'Pending',
   },
   iqamaPdf: String,
   createdAt: {

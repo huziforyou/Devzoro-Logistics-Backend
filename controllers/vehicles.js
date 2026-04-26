@@ -8,7 +8,8 @@ const { sendSMS } = require('../utils/smsService');
 // @access  Private
 exports.getVehicles = async (req, res, next) => {
   try {
-    const vehicles = await Vehicle.find()
+    // Only show Approved vehicles in the main list
+    const vehicles = await Vehicle.find({ status: 'Approved' })
       .populate('assignedDriver', 'fullName')
       .populate('pendingDriver', 'fullName');
     
@@ -152,7 +153,7 @@ exports.rejectAssignment = async (req, res, next) => {
 // @access  Private/Admin
 exports.createVehicle = async (req, res, next) => {
   try {
-    const vehicle = await Vehicle.create(req.body);
+    const vehicle = await Vehicle.create({ ...req.body, status: 'Pending' });
     res.status(201).json({ success: true, data: vehicle });
   } catch (error) {
     next(error);
@@ -165,6 +166,32 @@ exports.createVehicle = async (req, res, next) => {
 exports.updateVehicle = async (req, res, next) => {
   try {
     const vehicle = await Vehicle.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true
+    });
+
+    if (!vehicle) {
+      return res.status(404).json({ success: false, message: 'Vehicle not found' });
+    }
+
+    res.status(200).json({ success: true, data: vehicle });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Approve vehicle
+// @route   PUT /api/vehicles/approve/:id
+// @access  Private/Admin
+exports.approveVehicle = async (req, res, next) => {
+  try {
+    const { status } = req.body; // Expecting 'Approved' or 'Rejected'
+    
+    if (!['Approved', 'Rejected'].includes(status)) {
+      return res.status(400).json({ success: false, message: 'Invalid status' });
+    }
+
+    const vehicle = await Vehicle.findByIdAndUpdate(req.params.id, { status }, {
       new: true,
       runValidators: true
     });

@@ -9,7 +9,8 @@ const {
   assignDriver,
   approveAssignment,
   rejectAssignment,
-  updateLocation
+  updateLocation,
+  approveVehicle
 } = require('../controllers/vehicles');
 const { protect, authorize } = require('../middleware/auth');
 
@@ -18,6 +19,8 @@ router.use(protect);
 router.route('/')
   .get(getVehicles)
   .post(createVehicle);
+
+router.put('/approve/:id', authorize('admin'), approveVehicle);
 
 router.route('/:id')
   .get(getVehicle)

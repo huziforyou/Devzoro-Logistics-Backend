@@ -5,7 +5,8 @@ const {
   getDriver, 
   createDriver, 
   updateDriver, 
-  deleteDriver 
+  deleteDriver,
+  approveDriver
 } = require('../controllers/drivers');
 const { protect, authorize } = require('../middleware/auth');
 
@@ -14,6 +15,8 @@ router.use(protect);
 router.route('/')
   .get(getDrivers)
   .post(createDriver);
+
+router.put('/approve/:id', authorize('admin'), approveDriver);
 
 router.route('/:id')
   .get(getDriver)

@@ -8,7 +8,8 @@ const Vehicle = require('../models/Vehicle');
 // @access  Private
 exports.getDrivers = async (req, res, next) => {
   try {
-    const drivers = await Driver.find().populate('assignedVehicle', 'plateNumber');
+    // Only show Approved drivers in the main list
+    const drivers = await Driver.find({ status: 'Approved' }).populate('assignedVehicle', 'plateNumber');
     
     // Add task counts and pending status
     const driversWithInfo = await Promise.all(drivers.map(async (d) => {
@@ -83,7 +84,7 @@ exports.createDriver = async (req, res, next) => {
     const { assignedVehicle, ...driverData } = req.body;
     
     // Create driver without the vehicle assignment initially
-    const driver = await Driver.create({ ...driverData, assignedVehicle: null });
+    const driver = await Driver.create({ ...driverData, assignedVehicle: null, status: 'Pending' });
 
     // If a vehicle was selected, create a pending assignment in the Vehicle model
     if (assignedVehicle) {
@@ -94,6 +95,32 @@ exports.createDriver = async (req, res, next) => {
     }
 
     res.status(201).json({ success: true, data: driver });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Approve driver
+// @route   PUT /api/drivers/approve/:id
+// @access  Private/Admin
+exports.approveDriver = async (req, res, next) => {
+  try {
+    const { status } = req.body; // Expecting 'Approved' or 'Rejected'
+
+    if (!['Approved', 'Rejected'].includes(status)) {
+      return res.status(400).json({ success: false, message: 'Invalid status' });
+    }
+
+    const driver = await Driver.findByIdAndUpdate(req.params.id, { status }, {
+      new: true,
+      runValidators: true
+    });
+
+    if (!driver) {
+      return res.status(404).json({ success: false, message: 'Driver not found' });
+    }
+
+    res.status(200).json({ success: true, data: driver });
   } catch (error) {
     next(error);
   }
