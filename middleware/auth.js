@@ -44,8 +44,8 @@ exports.authorize = (...roles) => {
 
 exports.hasPermission = (permissionName) => {
   return (req, res, next) => {
-    // Admins, Super-admins and Managers bypass permission checks
-    if (['super-admin', 'admin', 'manager'].includes(req.user.role)) {
+    // Only Super-admins bypass permission checks
+    if (req.user.role === 'super-admin') {
       return next();
     }
 
