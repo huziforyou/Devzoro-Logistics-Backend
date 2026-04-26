@@ -48,6 +48,21 @@ const userSchema = new mongoose.Schema({
 });
 
 userSchema.pre('save', async function() {
+  if (this.isModified('role')) {
+    if (this.role === 'admin' || this.role === 'super-admin') {
+      this.permissions = {
+        viewVehicles: true,
+        viewDrivers: true,
+        createDispatch: true,
+        editDispatch: true,
+        viewReports: true,
+        manageUsers: true,
+        manageVehicles: true,
+        manageDrivers: true
+      };
+    }
+  }
+
   if (!this.isModified('password')) return;
   
   const salt = await bcrypt.genSalt(10);
